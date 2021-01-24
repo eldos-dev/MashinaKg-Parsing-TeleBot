@@ -34,13 +34,13 @@ def get_data_pages(html):
             price = product.find('p', class_='price').find('strong').text
             year = product.find('p', class_='year-miles').find('span').text.strip()
             fuel = product.find('p', class_='body-type').text.strip()
-            wheel = product.find('p', class_='volume').text.strip()
+            wheel = product.find('p', class_='volume').text.strip().split()
             # city = product.find('p', class_='city').text.strip()
             description = {
                             'price': price,
                             'year': year,
                             'fuel': fuel, 
-                            'wheel': wheel}
+                            'wheel': wheel[1]}
         except:
             description = ''
         

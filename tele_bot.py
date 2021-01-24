@@ -15,13 +15,14 @@ def get_dict():
     list_dict = [dict(elem) for elem in data]
     return list_dict
 
+# Create buttons
 inline_keyboard = types.InlineKeyboardMarkup()
-keyboards = types.InlineKeyboardMarkup()
 
 @bot.message_handler(commands=['start', 'hello'])
 def start(message):
     main()
     chat_id = message.chat.id
+
     list_dict = get_dict()
     count = 1
     for dict_ in list_dict:
@@ -30,31 +31,25 @@ def start(message):
         inline_keyboard.add(batton)
     bot.send_message(chat_id, f'Приветсвую, {message.chat.first_name}. Выберите машину', reply_markup=inline_keyboard)
 
+# Create buttons 'back' & 'exit'
+keyboards = types.InlineKeyboardMarkup()
+btn1 = types.InlineKeyboardButton('Назад', callback_data='back')
+btn2 = types.InlineKeyboardButton('Выйти', callback_data='exit')
+keyboards.add(btn1, btn2)
 
 @bot.callback_query_handler(func=lambda c: True)
 def show_discription(c):
-    btn1 = types.InlineKeyboardButton('Выйти')
-    btn2 = types.InlineKeyboardButton('Назад')
-    keyboards.add(btn1, btn2)
     chat_id = c.message.chat.id
-    list_dict = get_dict()
-    dict_ = list(list_dict[int(c.data) - 1].values())
-    dict_2 = list(dict_[2].values())
-    list_ = dict_2[3].split(',')
-    bot.send_message(chat_id, 
-                    f'Модель:  {dict_[0]}\n фото:  {dict_[1]} \n Цена:  {dict_2[0]} \nГод:  {dict_2[1]} \nДвигатель:  {dict_2[2]} \nРуль:  {list_[0]} \nПробег:  {list_[1]}',
-                    reply_markup=keyboards)
-
-
-
-
-
-    # if c.data == 'Назад':
-    #     bot.send_message(chat_id, f'Вы вернулись обратно', reply_markup=None)
-    # elif c.data == 'Выйти':
-    #     pass
-
-    # bot.edit_message_text(chat_id=chat_id, messange_id=c.message.messange_id, text=f'{list_dict[index]}', reply_markup=None)
-    # bot.send_message('', chat_id, reply_markup=None)
+    if c.data == 'back':
+        bot.send_message(chat_id, 'Вы вернулись в список', reply_markup=inline_keyboard)
+    elif c.data == 'exit':
+        bot.send_message(chat_id, 'Досвидания', reply_markup=None)
+    else:
+        list_dict = get_dict()
+        dict_ = list(list_dict[int(c.data) - 1].values())
+        dict_2 = list(dict_[2].values())
+        bot.send_message(chat_id,
+                        f'Модель:  {dict_[0]}\n фото:  {dict_[1]} \n Цена:  {dict_2[0]} \nГод:  {dict_2[1]} \nДвигатель:  {dict_2[2]} \nРуль:  {dict_2[3]}',
+                        reply_markup=keyboards)
 
 bot.polling()
